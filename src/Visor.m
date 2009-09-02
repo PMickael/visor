@@ -98,6 +98,9 @@ void displayReconfigurationCallback(CGDirectDisplayID display, CGDisplayChangeSu
     if (![ud objectForKey:@"VisorPosition"]) {
         [ud setObject:@"Top-Stretch" forKey:@"VisorPosition"];
     }
+    if (![ud objectForKey:@"PinVisorDefault"]) {
+        [ud setBool:YES forKey:@"PinVisorDefault"];
+    }
     
     // add the "Visor Preferences..." item to the Terminal menu
     NSMenuItem* prefsMenuItem = [statusMenu itemWithTitle:@"Visor Preferences..."];
@@ -120,9 +123,15 @@ void displayReconfigurationCallback(CGDirectDisplayID display, CGDisplayChangeSu
     [udc addObserver:self forKeyPath:@"values.VisorShowStatusItem" options:0 context:nil];
     [udc addObserver:self forKeyPath:@"values.VisorScreen" options:0 context:nil];
     [udc addObserver:self forKeyPath:@"values.VisorPosition" options:0 context:nil];
+    [udc addObserver:self forKeyPath:@"values.PinVisorDefault" options:0 context:nil];
 
     // get notified of resolution change
     CGDisplayRegisterReconfigurationCallback(displayReconfigurationCallback, self);
+
+    if ([ud boolForKey:@"PinVisorDefault"]) {
+		isPinned = !isPinned;
+		[self updateStatusMenu];
+    }
     
     return self;
 }
